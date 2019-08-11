@@ -13,6 +13,9 @@ import re
 
 
 def get_discusssion_url(max_length):
+    '''
+    获取页面下有多少个讨论，讨论里面有对这个感兴趣的人，对这些人发私信他们会看的可能性较大
+    '''
     temple = 'https://www.nowcoder.com/search?type=post&order=time&query=%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0&page='
     all_url = []
     for i in range(1, max_length):
@@ -30,6 +33,9 @@ def get_discusssion_url(max_length):
 
 
 def get_user_id(all_url):
+    '''
+    获取每个人对应的id
+    '''
     all_user = []
     driver = webdriver.PhantomJS(
         executable_path=r"D:\pywk\chromedriver_win32\phantomjs211\phantomjs-2.1.1-windows\bin\phantomjs.exe")
@@ -43,11 +49,10 @@ def get_user_id(all_url):
 
 all_discussion_url = get_discusssion_url(2)
 all_user_id = get_user_id(all_discussion_url)
-# print(all_user_id)
+
 
 
 # 打开浏览器，同时打开首页
-
 driver = webdriver.Chrome(executable_path=r"D:\pywk\chromedriver_win32\chromedriver.exe")
 # driver = webdriver.PhantomJS(executable_path=r"D:\pywk\chromedriver_win32\phantomjs211\phantomjs-2.1.1-windows\bin\phantomjs.exe")
 driver.get('https://www.nowcoder.com/profile/8415887')
@@ -69,6 +74,7 @@ sixing1 = driver.find_element_by_xpath('//*[@id="jsCpn_20_component_1"]/textarea
 sixing1.send_keys('你好，交个朋友吧')
 driver.find_element_by_xpath('//*[@id="jsCpn_19_popup_1"]/div[3]/a[1]').click()
 
+# 后面就不用输入密码了，直接循环，然后发送私信就可以了
 for single_user in all_user_id:
     js = 'window.open("{}");'.format(single_user)
     print(js)
@@ -86,6 +92,7 @@ for single_user in all_user_id:
     driver.switch_to.window(new_handle)
     driver.find_element_by_xpath('/html/body/div[1]/div[2]/div[1]/div[3]/a[2]').click()  # 点击私信
     time.sleep(1)
+    # 这里是为了保证能够找到发送对话框对应的Xpath
     for i in range(0, 100):
         for j in range(3):
             try:
@@ -93,7 +100,7 @@ for single_user in all_user_id:
                 sixing1.send_keys('你好，交个朋友吧')
             except:
                 continue
-
+    # 这里是为了保证能够找到确定那个按钮
     for i in range(0, 100):
         try:
             driver.find_element_by_xpath('//*[@id="jsCpn_{}_popup_0"]/div[3]/a[1]'.format(i)).click()
